@@ -1,0 +1,37 @@
+name: Deployment pipeline
+
+on:
+    push:
+        branches: [master]
+
+jobs: 
+    deployment_pipeline:
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                node-version: '20'
+            - name: Install server dependencies
+              run: npm install
+            - name: Install client dependencies
+              run: cd client && npm install
+            - name: check style
+              run: npm run lint
+            - name: production build
+              run: |
+               touch .env
+               echo MONGODB_URI=$MONGODB_URI >> .env
+               echo PORT=$PORT >> .env
+               npm run build
+              env:
+                MONGODB_URI: ${{ secrets.MONGODB_URI }}
+                PORT: ${{ secrets.PORT }}
+            - name: test
+              run: npm test
+            - name: e2e test
+              uses: cypress-io/github-action@v5
+              with:
+                command: npm run test:e2e
+                start: npm run start
+                wait-on: http://localhost:3001
