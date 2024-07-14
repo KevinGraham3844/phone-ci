@@ -18,6 +18,9 @@ morgan.token('body', function getBody (req) {
 
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
+app.get('/health', (req, res) => {
+    res.send('ok')
+})
 
 app.get('/', (request, response) => {
     response.send('<h1>Go to /api/persons for phonebook list</h1>')

@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
 
 const url = process.env.MONGODB_URI
-//const url = 'mongodb+srv://fullstack:codingishard@cluster0.kwmft4u.mongodb.net/PhonebookDB?retryWrites=true&w=majority'
+
 
 console.log('connecting to', url)
 
