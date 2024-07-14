@@ -1,3 +1,5 @@
+name: URL Health Check
+
 on: 
     push:
         branches: [master]
