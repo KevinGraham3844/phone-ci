@@ -3,6 +3,9 @@ name: Deployment pipeline
 on:
     push:
         branches: [master]
+    pull_request:
+        branches: [master]
+        types: [opened, synchronize]
 
 jobs: 
     deployment_pipeline:
@@ -36,4 +39,5 @@ jobs:
                 start: npm run start
                 wait-on: http://localhost:3001
             - name: Trigger deployment
+              if: ${{ github.event_name == 'push' }}
               run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
