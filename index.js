@@ -19,6 +19,8 @@ morgan.token('body', function getBody (req) {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 app.get('/health', (req, res) => {
+    // eslint-disable-next-line no-constant-condition
+    if(true) throw('error ')
     res.send('ok')
 })
 
