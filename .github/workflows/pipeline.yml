@@ -41,3 +41,36 @@ jobs:
             - name: Trigger deployment
               if: ${{ github.event_name == 'push' }}
               run: curl https://api.render.com/deploy/srv-${{ secrets.RENDER_SERVICE_ID }}?key=${{ secrets.RENDER_API_KEY }}
+            - name: successful deployment notification
+              uses: rjstone/discord-webhook-notify@v1
+              if: success()
+              with:
+                severity: info
+                color: '#00FF00'
+                description: to https://phone-ci.onrender.com/ by KevinGraham3844
+                text: A new version of phonebook app deployed!
+                webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+            - name: Failed deployment
+              uses: rjstone/discord-webhook-notify@v1
+              if: failure()
+              with:
+                severity: error
+                color: '#FF0000'
+                text: Build failed
+                description: commit https://github.com/${{github.repository}}/commit/${{github.sha}} by KevinGraham3844 broke the build :(
+                webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
+    tag_release:
+      needs: [deployment_pipeline]
+      if: ${{ (github.event_name == 'push') && (contains(toJson(github.event.commits.*.message), '#skip') == false) }}
+      runs-on: ubuntu-20.04
+      permissions:
+        contents: write
+      steps:
+        - uses: actions/checkout@v4
+        - name: Bump version and push tag
+          uses: anothrNick/github-tag-action@a2c70ae13a881faf2b4953baaa9e49731997ab36
+          env: 
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            DEFAULT_BUMP: patch
+            WITH_V: true
+            PRERELEASE: true
